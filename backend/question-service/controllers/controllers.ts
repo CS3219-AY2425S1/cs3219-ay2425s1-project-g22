@@ -1,21 +1,35 @@
 import { Request, Response } from "express";
-import { querySchema } from "../validations/querySchema.js";
+import { querySchema, createSchema } from "../validations/querySchema.js";
 
 class QuestionController {
   async get(req: Request, res: Response) {
-    const result = querySchema.safeParse(req.query);
+    const validation = querySchema.safeParse(req.query);
 
-    if (!result.success) {
-      return res.status(400).json({ errors: result.error.format() });
+    if (!validation.success) {
+      return res.status(400).json({ errors: validation.error.format() });
     }
 
-    const { id, c, d } = result.data;
+    const { id, c, d } = validation.data;
 
     res.status(200).json(`Questions filtered by: id: ${id}, c: ${c}, d: ${d}`);
   }
 
   async create(req: Request, res: Response) {
-    // ...
+    const validation = createSchema.safeParse(req.body);
+
+    if (!validation.success) {
+      return res.status(400).json({ errors: validation.error.format() });
+    }
+
+    const { title, desc, c, d } = validation.data;
+
+    res.status(201).json(
+      `Question created with: 
+        title: ${title}, 
+        desc: ${desc}, 
+        category: ${c}, 
+        difficulty: ${d}`
+    );
   }
 
   async update(req: Request, res: Response) {
