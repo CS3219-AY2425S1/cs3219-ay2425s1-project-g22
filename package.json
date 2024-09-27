@@ -1,0 +1,10 @@
+{
+  "devDependencies": {
+    "concurrently": "^9.0.1"
+  },
+  "scripts": {
+    "frontend": "cd frontend/question-repository && npm start",
+    "backend": "cd backend/question-service && npm run build && npm run start",
+    "start-all": "concurrently \"npm run frontend\" \"npm run backend\""
+}
+}
