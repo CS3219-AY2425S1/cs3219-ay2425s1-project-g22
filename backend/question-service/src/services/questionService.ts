@@ -39,7 +39,6 @@ export async function getQuestionsByFilter(categories?: string[], difficulties?:
   const collection = db.collection('questions');
 
   const filter: { [key: string]: any } = {};
-  
   if (categories) {
       filter['question.questionCategory'] = { 
         $elemMatch: {
@@ -55,7 +54,7 @@ export async function getQuestionsByFilter(categories?: string[], difficulties?:
 
   const questions = await collection.find(filter).toArray();
 
-  if (!questions) {
+  if (!questions || questions.length === 0) {
     return null;
   }
 
@@ -69,6 +68,29 @@ export async function getQuestionsByFilter(categories?: string[], difficulties?:
     }
   });
 }
+
+// Function to convert raw data to Question[]
+export function convertToQuestions(rawData: any[]): Question[] {
+  return rawData.map(data => ({
+    questionId: data.id, // Assuming `id` is the ObjectId
+    questionTitle: data.title,
+    questionDescription: data.desc,
+    questionCategory: data.c,
+    questionComplexity: data.d as Difficulty // Type assertion if necessary
+  }));
+}
+
+// Function to get a random question from an array of questions
+export function getRandomQuestion(questions: Question[]): Question | null {
+  if (!questions || questions.length === 0) {
+    console.log('No questions available for the given filters.');
+    return null;
+  }
+  
+  const randomIndex = Math.floor(Math.random() * questions.length);
+  return questions[randomIndex];
+}
+
 
 // Update a question by ID, only the fields that are provided in the updatedQuestion object will be updated
 export async function updateQuestion(questionId: ObjectId, updatedQuestion: Partial<Question>) {

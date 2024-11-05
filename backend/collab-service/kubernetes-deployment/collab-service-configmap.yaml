@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: collab-service-configmap
+  namespace: peerprep-collab-service
+data:
+  KAFKA_BROKERS: "kafka:9092"

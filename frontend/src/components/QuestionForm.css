@@ -24,13 +24,13 @@
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Blue shadow on focus */
 }
 
-button {
+.custom-button {
   padding: 10px 20px; /* Larger button size */
   border-radius: 20px; /* Fully rounded button */
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-button:hover {
+.custom-button:hover {
   background-color: #0056b3; /* Darker shade on hover */
   transform: translateY(-2px); /* Slight lift on hover */
 }

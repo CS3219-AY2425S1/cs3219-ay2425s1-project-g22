@@ -1,5 +1,5 @@
 import React from "react";
-import QuestionForm from "./QuestionForm";
+import QuestionForm from "../components/QuestionForm";
 import { updateData as editQuestion } from "../services/questionService";
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -18,7 +18,6 @@ const EditQuestion = () => {
 
   return (
     <div>
-      <h2>Edit Question</h2>
       <QuestionForm questionId={id} onSubmit={handleSubmit} />
     </div>
   );

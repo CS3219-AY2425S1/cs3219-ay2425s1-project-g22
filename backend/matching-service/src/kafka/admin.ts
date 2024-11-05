@@ -19,6 +19,13 @@ export async function adminInit(): Promise<void> {
       { topic: 'matching-results', numPartitions: 3, replicationFactor: 1 },
       { topic: 'match-canceled', numPartitions: 3, replicationFactor: 1 },
       { topic: 'match-timeout', numPartitions: 3, replicationFactor: 1 },
+      { topic: 'match-accepted', numPartitions: 3, replicationFactor: 1 },
+      { topic: 'match-rejected', numPartitions: 3, replicationFactor: 1 },
+      { topic: 'collab-request', numPartitions: 3, replicationFactor: 1 },
+      { topic: 'collab-room', numPartitions: 3, replicationFactor: 1 },
+      
+
+
     ],
   });
   console.log(`Topic creation result: ${result1}`);

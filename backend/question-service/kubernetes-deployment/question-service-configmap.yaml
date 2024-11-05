@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: question-service-configmap
+  namespace: peerprep-question-service
+data:
+  MONGO_URI: "mongodb+srv://zengzihui:phe5zGA4hKbZOdMJ@cs3219-project-g22.qsy2d.mongodb.net/?retryWrites=true&w=majority&appName=cs3219-project-g22"

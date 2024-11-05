@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: collab-service
+  namespace: peerprep-collab-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: collab-service
+  template:
+    metadata:
+      labels:
+        app: collab-service
+    spec:
+      containers:
+      - name: collab-service
+        image: cpauzi/collab-service:latest
+        ports:
+          - containerPort: 8081
+        envFrom:
+        - configMapRef:
+            name: collab-service-configmap
+        resources:
+          requests:
+            cpu: "200m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"

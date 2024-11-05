@@ -214,4 +214,22 @@ const getAttemptedQuestions = async (userId) => {
   }
 }
 
-export { userLogin, userLogout, createUser, getUser, getAttemptedQuestions, getAllUsers, getToken, isUserAdmin, updateUser, updateUserPrivilege, deleteUser, verifyToken, resetPassword, requestPasswordReset };
+const addAttemptedQuestion = async (userId, questionId) => {
+  try {
+    const response = await api.post(`/users/${userId}/attempts`, { questionId }, {
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+      },
+    });
+    return response.data; // 201 Created
+  } catch (error) {
+    if (error.response) {
+      console.error('Error:', error.response.data);
+    } else {
+      console.error('Error:', error.message);
+    }
+    throw error;
+  }
+}
+
+export { addAttemptedQuestion, userLogin, userLogout, createUser, getUser, getAttemptedQuestions, getAllUsers, getToken, isUserAdmin, updateUser, updateUserPrivilege, deleteUser, verifyToken, resetPassword, requestPasswordReset };

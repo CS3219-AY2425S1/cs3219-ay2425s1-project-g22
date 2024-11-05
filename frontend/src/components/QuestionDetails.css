@@ -14,7 +14,7 @@
 }
 
 .card-title {
-  font-size: 1.5em;
+  font-size: 2em;
   font-weight: bold;
 }
 
@@ -22,3 +22,11 @@ button {
   border-radius: 12px;
 }
 
+.custom-badge {
+  background-color: #4caf50; /* Custom background color */
+  color: white; /* Text color */
+  font-size: 0.5rem; /* Adjust font size */
+  padding: 0.5em 0.75em; /* Adjust padding */
+  border-radius: 0.5rem; /* Rounded corners */
+  margin-right: 0.5em; /* Space between badges */
+}

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-service-configmap
+  namespace: peerprep-user-service
+data:
+  DB_LOCAL_URI: "mongodb://mongodb-service.peerprep-user-service.svc.cluster.local:27017/peerprepUserServiceDB"
+  QUESTION_SERVICE_BASE_URL: "http://question-service:8080/api/questions"
+  PORT: "3001"
+  ENV: "PROD"
+  FRONTEND_URL: "http://localhost:3000"

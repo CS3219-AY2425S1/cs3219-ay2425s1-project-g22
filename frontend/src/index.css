@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 .no-border {
-  border: none !important; /* Use !important to ensure it overrides existing styles */
+  border: none !important;
+  /* Use !important to ensure it overrides existing styles */
 }
 
 .bg-error {
@@ -11,28 +12,43 @@
 }
 
 .bouncing-dot {
-  width: 0.5rem; /* equivalent to w-2 (2 * 0.25rem) */
-  height: 0.5rem; /* equivalent to h-2 (2 * 0.25rem) */
-  background-color: white; /* equivalent to bg-white */
-  border-radius: 9999px; /* equivalent to rounded-full for a circle */
-  animation: bounce 0.75s infinite; /* Using a custom bounce animation */
+  width: 0.5rem;
+  /* equivalent to w-2 (2 * 0.25rem) */
+  height: 0.5rem;
+  /* equivalent to h-2 (2 * 0.25rem) */
+  background-color: white;
+  /* equivalent to bg-white */
+  border-radius: 9999px;
+  /* equivalent to rounded-full for a circle */
+  animation: bounce 0.75s infinite;
+  /* Using a custom bounce animation */
 }
 
 /* Animation keyframes for bounce effect */
 @keyframes bounce {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
-    transform: translateY(-0.5rem); /* Bounce height */
+    transform: translateY(-0.5rem);
+    /* Bounce height */
   }
 }
 
 /* Adding delay for the second and third dots */
 .bouncing-dot:nth-child(2) {
-  animation-delay: 0.2s; /* equivalent to delay-200 */
+  animation-delay: 0.2s;
+  /* equivalent to delay-200 */
 }
 
 .bouncing-dot:nth-child(3) {
-  animation-delay: 0.4s; /* equivalent to delay-400 */
+  animation-delay: 0.4s;
+  /* equivalent to delay-400 */
+}
+
+.markdown>* {
+  all: revert;
 }

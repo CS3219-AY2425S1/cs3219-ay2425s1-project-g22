@@ -1,5 +1,5 @@
 import React from "react";
-import QuestionForm from "./QuestionForm";
+import QuestionForm from "../components/QuestionForm";
 import { addData as addQuestion } from "../services/questionService";
 import { useNavigate } from "react-router-dom";
 
@@ -17,7 +17,6 @@ const AddQuestion = () => {
 
   return (
     <div>
-      <h2 className="text-center">Adding</h2>
       <QuestionForm onSubmit={handleSubmit} />
     </div>
   );

@@ -44,9 +44,26 @@ export async function connectResultConsumer(
             if (socketId1) {
                 io.to(socketId1).emit('match-result', matchResult);
             }
+
+            const otherMatchResult = matchResult;
+            otherMatchResult.userId = matchedUserId;
+            otherMatchResult.matchedUserId = userId;
+
             if (socketId2) {
-                io.to(socketId2).emit('match-result', matchResult);
+                io.to(socketId2).emit('match-result', otherMatchResult);
             }
+
+            // sendMessage('collab-room', { key: 'room', value: {
+            //     users: [userId, matchedUserId],
+            //     question: {
+            //         questionId: "1",
+            //         questionTitle: "Test Question",
+            //         questionDescription: "Test Description",
+            //         questionCategory: ["Test"],
+            //         questionComplexity: "Easy"
+            //     },
+            //     language: "python"
+            // } }); // FOR DEBUGGING ONLY
         
         }},        
     });

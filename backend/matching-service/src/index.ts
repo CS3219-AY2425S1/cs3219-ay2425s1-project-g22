@@ -6,10 +6,14 @@ import { connectRequestConsumer } from './kafka/requestConsumer';
 import { connectResultConsumer } from './kafka/resultConsumer';
 import { connectTimeoutConsumer } from './kafka/timeoutConsumer';
 import { connectCancellationConsumer } from './kafka/cancellationConsumer';
+import { connectCollabRequestConsumer } from './kafka/collabRequestConsumer';
+import { connectMatchAcceptedConsumer } from './kafka/matchAcceptedConsumer';
+import { connectMatchRejectedConsumer } from './kafka/matchRejectedConsumer';
 import { adminInit } from './kafka/admin';
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { connect } from 'tls';
 
 const app = express();
 app.use(cors());
@@ -57,6 +61,33 @@ io.on('connection', (socket) => {
     await sendMessage('match-canceled', { key: matchRequest.userId, value: matchRequest});
   });
 
+  socket.on('acceptance-status', async (acceptanceStatus) => {
+    const { userId, isAccepted, matchedUserId } = acceptanceStatus;
+
+    console.log();
+    console.log('----------------------inside acceptance-status socket-----------------------')
+    console.log('testing userId = ', userId);
+    console.log('testing isAccepted = ', isAccepted);
+    console.log('testing matchedUserId = ', matchedUserId);
+
+    console.log('testing acceptance.userId = ', acceptanceStatus.userId);
+    console.log('testing acceptance.isAccepted = ', acceptanceStatus.isAccepted);
+    console.log('testing acceptance.matchedUserId = ', acceptanceStatus.matchedUserId);
+    console.log('----------------------------------------------------------------------------')
+    console.log();
+
+    if (acceptanceStatus.isAccepted) {
+      await sendMessage('match-accepted', { key: acceptanceStatus.userId, value: { userId, matchedUserId } });
+    } else {
+      await sendMessage('match-rejected', { key: acceptanceStatus.userId, value: { userId, matchedUserId } });
+    }
+  });
+
+  socket.on('collab-room-data', async (collabData) => {
+    const { userId1, userId2, interestTopic, difficulty, language } = collabData;
+    await sendMessage('collab-request', { key: userId1, value: { userId1, userId2, interestTopic, difficulty, language } });
+  });
+
   // Handle disconnections
   // clean up the userSocketMap when a client disconnects
   socket.on('disconnect', () => {
@@ -83,6 +114,9 @@ const startServer = async () => {
     await connectResultConsumer(io, userSocketMap);
     await connectCancellationConsumer(io, userSocketMap);
     await connectTimeoutConsumer(io, userSocketMap);
+    await connectCollabRequestConsumer(io, userSocketMap);
+    await connectMatchAcceptedConsumer(io, userSocketMap);
+    await connectMatchRejectedConsumer(io, userSocketMap);
   
     // Start the WebSocket server
     const PORT = 8081;

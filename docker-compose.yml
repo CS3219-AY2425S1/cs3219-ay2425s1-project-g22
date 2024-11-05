@@ -4,6 +4,11 @@ services:
     container_name: question-backend
     ports:
       - "8080:8080"
+    environment:
+      KAFKA_BROKER: kafka:9092
+      KAFKA_TOPIC: "generate-question"
+    depends_on:
+      - kafka
     networks:
       - peerprep-network
 
@@ -22,7 +27,20 @@ services:
       - "8081:8081"
     environment:
       KAFKA_BROKER: kafka:9092
-      KAFKA_TOPIC: "matching-requests,matching-results,match-canceled,match-timeout"
+      KAFKA_TOPIC: "matching-requests,matching-results,match-canceled,match-timeout,match-rejected,match-accepted,collab-request"
+    depends_on:
+      - kafka
+    networks:
+      - peerprep-network
+
+  collab-service:
+    build: ./backend/collab-service
+    container_name: collab-backend
+    ports:
+      - "8888:8888"
+    environment:
+      KAFKA_BROKER: kafka:9092
+      KAFKA_TOPIC: "collab-code,collab-room"
     depends_on:
       - kafka
     networks:
@@ -48,6 +66,8 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
+      LOG4J_LOGGER_KAFKA: WARN
+      LOG4J_LOGGER_ORG_APACHE_KAFKA: WARN
     depends_on:
       - zookeeper
     networks:
@@ -58,6 +78,14 @@ services:
     container_name: zookeeper
     ports:
       - "2181:2181"
+    networks:
+      - peerprep-network
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
     networks:
       - peerprep-network
   

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: matching-service-configmap
+  namespace: peerprep-matching-service
+data:
+  KAFKA_BROKERS: "kafka:9092"
