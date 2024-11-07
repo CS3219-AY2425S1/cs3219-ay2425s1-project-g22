@@ -5,7 +5,7 @@ import { Difficulty, Question } from '../models/question.js';
 
 const kafka = new Kafka({
     clientId: 'generate-question-consumer',
-    brokers: ['kafka:9092'],
+    brokers: [process.env.KAFKA_BROKER || 'kafka:9092'],
 });
 
 const consumer: Consumer = kafka.consumer({ groupId: 'generate-question-group' });

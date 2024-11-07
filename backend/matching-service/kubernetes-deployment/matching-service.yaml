@@ -10,4 +10,4 @@ spec:
     - protocol: TCP
       port: 8081
       targetPort: 8081
-  type: ClusterIP  # Use 'NodePort' if you want to expose the service externally
+  type: ClusterIP  

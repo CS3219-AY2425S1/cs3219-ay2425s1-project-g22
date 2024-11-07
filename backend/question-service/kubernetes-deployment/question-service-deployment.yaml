@@ -15,12 +15,12 @@ spec:
     spec:
       containers:
       - name: question-service
-        image: cpauzi/question-service:latest
+        image: asia-southeast1-docker.pkg.dev/cs3219-project-g22/peerprep-docker/question-service:v1
         ports:
           - containerPort: 8080
         envFrom:
         - configMapRef:
-            name: question-service-configmap
+            name: question-service-config-bkoh
         resources:
           requests:
             cpu: "200m"

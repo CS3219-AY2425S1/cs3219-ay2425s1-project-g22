@@ -11,4 +11,4 @@ spec:
       port: 30
       targetPort: 3000  
       nodePort: 30000
-  type: LoadBalancer  # Use 'NodePort' if you want to expose the service externally
+  type: LoadBalancer 

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka
+  namespace: default
+spec:
+  ports:
+    - port: 9092
+      name: kafka
+  clusterIP: None  # Headless service for stable network identity
+  selector:
+    app: kafka

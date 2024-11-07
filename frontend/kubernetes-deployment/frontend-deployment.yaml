@@ -4,7 +4,7 @@ metadata:
   name: frontend
   namespace: peerprep-frontend
 spec:
-  replicas: 1 
+  replicas: 2
   selector:
     matchLabels:
       app: frontend
@@ -15,7 +15,8 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: cpauzi/frontend:latest
+        image: asia-southeast1-docker.pkg.dev/cs3219-project-g22/peerprep-docker/frontend:v1
+        imagePullPolicy: Always
         ports:
         - containerPort: 3000
         envFrom:

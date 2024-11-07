@@ -2,7 +2,7 @@ import { Kafka, Producer } from 'kafkajs';
 
 const kafka = new Kafka({
     clientId: 'question-service-producer',
-    brokers: ['kafka:9092'],
+    brokers: [process.env.KAFKA_BROKER || 'kafka:9092'],
 });
 
 const producer: Producer = kafka.producer();

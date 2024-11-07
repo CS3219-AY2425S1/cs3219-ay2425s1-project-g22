@@ -15,7 +15,8 @@ spec:
     spec:
       containers:
       - name: user-service
-        image: cpauzi/user-service:latest
+        image: asia-southeast1-docker.pkg.dev/cs3219-project-g22/peerprep-docker/user-service:v1
+        imagePullPolicy: Always
         ports:
           - containerPort: 3001
         envFrom:
@@ -23,7 +24,7 @@ spec:
             name: user-service-configmap
         - secretRef:
             name: user-service-secret
-        esources:
+        resources:
           requests:
             cpu: "200m"
             memory: "256Mi"

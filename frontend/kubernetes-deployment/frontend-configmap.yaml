@@ -4,5 +4,5 @@ metadata:
   name: frontend-configmap
   namespace: peerprep-frontend
 data:
-  REACT_APP_QUESTION_SERVICE_BASE_URL: 'http://question-service.peerprep-question-service.svc.cluster.local:8080/api/questions'
-  REACT_APP_USER_SERVICE_BASE_URL: 'http://user-service.peerprep-user-service.svc.cluster.local:3001'
+  REACT_APP_QUESTION_SERVICE_BASE_URL: 'http://localhost:8080/api/questions'
+  REACT_APP_USER_SERVICE_BASE_URL: 'http://localhost:3001'

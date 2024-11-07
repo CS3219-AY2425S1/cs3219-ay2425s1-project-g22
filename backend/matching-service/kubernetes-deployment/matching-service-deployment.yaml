@@ -15,12 +15,12 @@ spec:
     spec:
       containers:
       - name: matching-service
-        image: cpauzi/matching-service:latest
+        image: asia-southeast1-docker.pkg.dev/cs3219-project-g22/peerprep-docker/matching-service:v1
         ports:
           - containerPort: 8081
         envFrom:
         - configMapRef:
-            name: matching-service-configmap
+            name: matching-service-config-elqj
         resources:
           requests:
             cpu: "200m"
