@@ -40,7 +40,7 @@ services:
       - "8888:8888"
     environment:
       KAFKA_BROKER: kafka:9092
-      KAFKA_TOPIC: "collab-code,collab-room"
+      KAFKA_TOPIC: "collab-code,collab-room,collab-chat"
     depends_on:
       - kafka
     networks:

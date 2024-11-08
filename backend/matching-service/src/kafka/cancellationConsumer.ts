@@ -1,18 +1,22 @@
-import { Kafka, Consumer, EachMessagePayload } from 'kafkajs';
+import { Kafka, Consumer, EachMessagePayload, logLevel } from 'kafkajs';
 import { Difficulty, MatchRequest, MatchStatus } from '../models/matchRequest';
 import { MatchingPools } from '../services/matchingPools';
+import redis from '../redisClient';
 
 const kafka = new Kafka({
     clientId: 'match-cancellation-consumer',
     brokers: ['kafka:9092'],
+    logLevel: logLevel.ERROR,
+    retry: {
+      retries: 10,  // Increase retry count here
+      initialRetryTime: 3000,  // Time (in ms) before the first retry
+      factor: 0.2,  // Factor by which the retry time increases after each attempt
+    },
 });
 
 const consumer: Consumer = kafka.consumer({ groupId: 'matching-cancellation-group' });
 
-export async function connectCancellationConsumer(
-    io: any,
-    userSocketMap: Map<string, string>
-): Promise<void> { 
+export async function connectCancellationConsumer(io: any): Promise<void> { 
     await consumer.connect();
     console.log('Match Cancellation Consumer connected');
 
@@ -21,14 +25,6 @@ export async function connectCancellationConsumer(
     
     await consumer.run({
         eachMessage: async ({ topic, partition, message }: EachMessagePayload) => {
-          //console.log("--------------------[HELLO FROM CANCEL_MATCH_CONSUMER]----------------------");
-          // console.log({
-          //     "[CONSUMER]":
-          //     topic,
-          //     partition,
-          //     key: message.key?.toString(), // Check for possible undefined
-          //     value: message.value?.toString(), // Check for possible undefined
-          // });
           const matchRequestData: Partial<MatchRequest> = JSON.parse(
               message.value?.toString()!
           ); 
@@ -53,10 +49,8 @@ export async function connectCancellationConsumer(
           };
             
           const userId = canceledMatchRequest.userId;
-          // console.log(canceledMatchRequest)
-          // console.log(canceledMatchRequest.topics)
           const matchRequest = matchingPools.findMatchRequestInTopicPools(userId, canceledMatchRequest.topics)!;
-  
+
           //console.log(matchRequest);
           if (matchRequest) {
               matchingPools.removeMatchRequest(matchRequest);
@@ -70,6 +64,7 @@ export async function connectCancellationConsumer(
             console.log();
             //console.log('Cancelling on non-existent match request');
           }          
+
         },
     });
 }

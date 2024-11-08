@@ -1,23 +1,23 @@
-export const TYPESCRIPT_TEMPLATE = `
+const TYPESCRIPT_TEMPLATE = `
   function solution() {
     // Your code here
   }
 `;
-export const JAVASCRIPT_TEMPLATE = `
+const JAVASCRIPT_TEMPLATE = `
 function solution() {
   // Your code here
 }`;
-export const PYTHON_TEMPLATE = `
+const PYTHON_TEMPLATE = `
 def solution():
   # Your code here
 `;
-export const JAVA_TEMPLATE = `
+const JAVA_TEMPLATE = `
 public class Main {
   public static void main(String[] args) {
     // Your code here
   }
 }`;
-export const CPP_TEMPLATE = `
+const CPP_TEMPLATE = `
 #include <iostream>
 using namespace std;
 
@@ -25,7 +25,7 @@ int main() {
   // Your code here
   return 0;
 }`;
-export const CSHARP_TEMPLATE = `
+const CSHARP_TEMPLATE = `
 using System;
 
 class Program {
@@ -33,6 +33,18 @@ class Program {
     // Your code here
   }
 }`;
+const C_TEMPLATE = `
+using System;
+
+class Program {
+  static void Main() {
+    // Your code here
+  }
+}`;
+
+const DEFAULT_TEMPLATE = `
+// Your code here
+`;
 
 export function getTemplate(language: string): string {
   switch (language) {
@@ -48,7 +60,9 @@ export function getTemplate(language: string): string {
       return CPP_TEMPLATE;
     case 'csharp': // Assuming 'csharp' for C#
       return CSHARP_TEMPLATE;
+    case 'c':
+      return C_TEMPLATE;
     default:
-      return '';
+      return DEFAULT_TEMPLATE;
   }
 }

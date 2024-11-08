@@ -26,21 +26,22 @@ const io = new Server(httpServer, {
 const userSocketMap = new Map<string, string>();
 
 io.on('connection', (socket) => {
-  console.log('A user connected to socket:', socket.id);
+  console.log(`A user connected to socket [${socket.id}]`);
 
   // Register user with their socket ID
   socket.on('register', (userId: string) => {
     userSocketMap.set(userId, socket.id);
-    console.log(`User registered: ${userId} with socket ID: ${socket.id}`);
+    console.log(`User [${userId}] registered with socket ID [${socket.id}]`);
   });
 
   // Handle disconnections
   // clean up the userSocketMap when a client disconnects
   socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id);
+    
     // Remove user from the map
     for (const [userId, sId] of userSocketMap.entries()) {
       if (sId === socket.id) {
+        console.log(`User [${userId}] disconnected with socket ID [${socket.id}]`);
         userSocketMap.delete(userId);
         break;
       }

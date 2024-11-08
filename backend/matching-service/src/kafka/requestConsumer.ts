@@ -1,21 +1,24 @@
-import { Kafka, Consumer, EachMessagePayload } from 'kafkajs';
+import { Kafka, Consumer, EachMessagePayload, logLevel } from 'kafkajs';
 import { Difficulty, MatchRequest, MatchStatus } from '../models/matchRequest';
-import { MatchResult } from '../models/matchResult';
 import { attemptMatch } from '../services/matchingService';
 import { MatchingPools } from '../services/matchingPools';
 import { connectProducer, sendMessage } from './producer';
+import redis from '../redisClient';
 
 const kafka = new Kafka({
     clientId: 'matching-service-consumer',
     brokers: ['kafka:9092'],
+    logLevel: logLevel.ERROR,
+    retry: {
+      retries: 10,  // Increase retry count here
+      initialRetryTime: 3000,  // Time (in ms) before the first retry
+      factor: 0.2,  // Factor by which the retry time increases after each attempt
+    },
 });
 
 const consumer: Consumer = kafka.consumer({ groupId: 'matching-service-group' });
   
-export async function connectRequestConsumer(
-    io: any,
-    userSocketMap: Map<string, string>
-  ): Promise<void> {
+export async function connectRequestConsumer(io: any): Promise<void> {
     await consumer.connect();
     console.log('Match Request Consumer connected');
     
@@ -25,18 +28,10 @@ export async function connectRequestConsumer(
     await consumer.run({
       eachMessage: async ({ topic, partition, message }: EachMessagePayload) => {
         if (topic === 'matching-requests') {
-          // console.log({
-          //   "[CONSUMER]":
-          //   topic,
-          //   partition,
-          //   key: message.key?.toString(), // Check for possible undefined
-          //   value: message.value?.toString(), // Check for possible undefined
-          // });
           const matchRequestData: Partial<MatchRequest> = JSON.parse(
             message.value?.toString()!
           );
-          // console.log("MATCHING_REQUEST_DATA")
-          // console.log(matchRequestData);
+        
           const matchRequest: MatchRequest = {
             userId: matchRequestData.userId!,
             topics: Array.isArray(matchRequestData.topics) ? matchRequestData.topics : [],

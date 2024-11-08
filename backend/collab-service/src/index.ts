@@ -4,9 +4,10 @@ import express from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { connectProducer, sendMessage } from './kafka/producer';
+import { connectProducer, sendCodeMessage, sendChatMessage } from './kafka/producer';
 import { connectRoomConsumer } from './kafka/roomConsumer';
 import { connectCodeConsumer } from './kafka/codeConsumer';
+import { connectChatConsumer } from './kafka/chatConsumer';
 import { roomManager } from './services/roomManager';
 import redis from './redisClient';
 
@@ -23,7 +24,6 @@ const io = new Server(httpServer, {
 
 const usersToSocketsKey = 'usersToSockets';
 const socketsToUsersKey = 'socketsToUsers';
-
 
 io.on('connection', (socket) => {
   console.log('A user connected to socket:', socket.id);
@@ -49,7 +49,7 @@ io.on('connection', (socket) => {
       return;
     }
 
-    await sendMessage('collab-code', { key: username, value: code });
+    await sendCodeMessage('collab-code', { key: username, value: code });
   });
 
   socket.on('get-room-details', async (roomId: string, callback) => {
@@ -85,39 +85,51 @@ io.on('connection', (socket) => {
   socket.on('disconnect-collab', async () => {
     handleDisconnect(socket.id);
   });
+
+  // New event handler for chat messages
+  socket.on('chat-message', async (message: string) => {
+    const username = await redis.hget(socketsToUsersKey, socket.id);
+    if (!username) {
+      console.log('User not registered');
+      return;
+    }
+
+    // Send the chat message to Kafka
+    await sendChatMessage('collab-chat', { key: username, value: message });
+  });
 });
 
 async function handleDisconnect(id: string) {
   const username = await redis.hget(socketsToUsersKey, id);
-    if (!username) {
-      console.log('User not registered, cannot disconnect');
-      return;
-    }
+  if (!username) {
+    console.log('User not registered, cannot disconnect');
+    return;
+  }
 
-    const roomId = await roomManager.getRoomId(username);
-    if (!roomId) {
-      console.log('User not in a room');
-      return;
-    }
+  const roomId = await roomManager.getRoomId(username);
+  if (!roomId) {
+    console.log('User not in a room');
+    return;
+  }
 
-    const otherUser = await roomManager.getOtherUser(username);
-    const otherUserSocketId = await redis.hget(usersToSocketsKey, otherUser);
-    if (!otherUserSocketId) {
-      // Other user is not connected, remove the room
-      console.log('Other user not connected, removing room');
-      await roomManager.removeRoom(roomId);
-      console.log('Room removed:', roomId);
-    }
+  const otherUser = await roomManager.getOtherUser(username);
+  const otherUserSocketId = await redis.hget(usersToSocketsKey, otherUser);
+  if (!otherUserSocketId) {
+    // Other user is not connected, remove the room
+    console.log('Other user not connected, removing room');
+    await roomManager.removeRoom(roomId);
+    console.log('Room removed:', roomId);
+  }
 
-    // Remove user from Redis
-    redis.hdel(usersToSocketsKey, username);
-    redis.hdel(socketsToUsersKey, id);
-    console.log(`${username} disconnected`);
+  // Remove user from Redis
+  redis.hdel(usersToSocketsKey, username);
+  redis.hdel(socketsToUsersKey, id);
+  console.log(`${username} disconnected`);
 
-    // Send disconnect message to other user
-    if (otherUserSocketId) {
-      io.to(otherUserSocketId).emit('other-user-disconnect');
-    }
+  // Send disconnect message to other user
+  if (otherUserSocketId) {
+    io.to(otherUserSocketId).emit('other-user-disconnect');
+  }
 }
 
 const startServer = async () => {
@@ -126,6 +138,7 @@ const startServer = async () => {
 
     await connectRoomConsumer();
     await connectCodeConsumer(io);
+    await connectChatConsumer(io);
 
     const PORT = 8888;
     httpServer.listen(PORT, () => {

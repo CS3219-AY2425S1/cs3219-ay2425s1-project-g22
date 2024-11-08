@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import QuestionList from './components/QuestionList';
 import AddQuestion from './pages/AddQuestionPage';
 import EditQuestion from './pages/EditQuestionPage';
-import QuestionDetails from './components/QuestionDetails';
 import LoginPage from './pages/LoginPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import RequestResetPasswordPage from './pages/RequestResetPasswordPage';
@@ -19,6 +18,7 @@ import HistoryPage from './pages/HistoryPage';
 import PrivateRoute from './components/PrivateRoute';
 import AdminRoute from './components/AdminRoute';
 import Header from './components/Header';
+import QuestionDetailsPage from './pages/QuestionDetailsPage';
 
 function App() {
   const [topics, setTopics] = useState([]);
@@ -59,7 +59,7 @@ function App() {
           <Route path="/questions" element={<AdminRoute><QuestionList /></AdminRoute>} />
           <Route path="/questions/add" element={<AdminRoute><AddQuestion /></AdminRoute>} />
           <Route path="/questions/edit/:id" element={<AdminRoute><EditQuestion /></AdminRoute>} />
-          <Route path="/questions/:id" element={<AdminRoute><QuestionDetails /></AdminRoute>} />
+          <Route path="/questions/:id" element={<AdminRoute><QuestionDetailsPage /></AdminRoute>} />
         </Routes>
       </main>
     </Router>

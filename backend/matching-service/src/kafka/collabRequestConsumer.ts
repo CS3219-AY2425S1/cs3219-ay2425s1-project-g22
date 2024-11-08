@@ -1,18 +1,21 @@
-import { Kafka, Consumer, EachMessagePayload } from 'kafkajs';
+import { Kafka, Consumer, EachMessagePayload, logLevel } from 'kafkajs';
 import { sendMessage } from './producer';
 import redis from '../redisClient';
 
 const kafka = new Kafka({
     clientId: 'collab-request-consumer',
     brokers: ['kafka:9092'],
+    logLevel: logLevel.ERROR,
+    retry: {
+      retries: 10,  // Increase retry count here
+      initialRetryTime: 3000,  // Time (in ms) before the first retry
+      factor: 0.2,  // Factor by which the retry time increases after each attempt
+    },
 });
 
 const consumer: Consumer = kafka.consumer({ groupId: 'collab-request-group' });
 
-export async function connectCollabRequestConsumer(
-    io: any,
-    userSocketMap: Map<string, string>
-): Promise<void> { 
+export async function connectCollabRequestConsumer(io: any): Promise<void> { 
     await consumer.connect();
     console.log('Collab Request Consumer connected');
 

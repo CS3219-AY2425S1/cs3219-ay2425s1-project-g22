@@ -1,12 +1,18 @@
 // Handles the code changes sent by one user and sends them to the other user in the room
 
-import { Kafka, Consumer, EachMessagePayload } from 'kafkajs';
+import { Kafka, Consumer, EachMessagePayload, logLevel } from 'kafkajs';
 import { roomManager } from '../services/roomManager';
 import redis from '../redisClient';
 
 const kafka = new Kafka({
     clientId: 'collab-code-consumer',
     brokers: ['kafka:9092'],
+    logLevel: logLevel.ERROR,
+    retry: {
+      retries: 10,  // Increase retry count here
+      initialRetryTime: 3000,  // Time (in ms) before the first retry
+      factor: 0.2,  // Factor by which the retry time increases after each attempt
+    },
 });
 
 const consumer: Consumer = kafka.consumer({ groupId: 'collab-code-group' });

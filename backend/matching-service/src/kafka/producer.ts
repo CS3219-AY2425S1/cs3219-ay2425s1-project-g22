@@ -1,8 +1,14 @@
-import { Kafka, Producer } from 'kafkajs';
+import { Kafka, Producer, logLevel } from 'kafkajs';
 
 const kafka = new Kafka({
     clientId: 'matching-service-producer',
     brokers: ['kafka:9092'],
+    logLevel: logLevel.ERROR,
+    retry: {
+      retries: 10,  // Increase retry count here
+      initialRetryTime: 3000,  // Time (in ms) before the first retry
+      factor: 0.2,  // Factor by which the retry time increases after each attempt
+    },
 });
 
 const producer: Producer = kafka.producer();

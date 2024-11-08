@@ -3,8 +3,6 @@ import { Queue } from '../dataStructures/queue';
 
 export class MatchingPools {
     topicPools: Map<string, Queue<MatchRequest>> = new Map();
-    difficultyPools: Map<string, Queue<MatchRequest>> = new Map();
-    languagePools: Map<string, Queue<MatchRequest>> = new Map();
 
     // Singleton pattern as we want only one instance of MatchingPools
     private static instance: MatchingPools;
@@ -37,21 +35,6 @@ export class MatchingPools {
         console.log('---------------------------------------------------------------------');
         console.log();
 
-        // Add to difficulty Pools
-        for (const difficulty of matchRequest.difficulties) {
-            if (!this.difficultyPools.has(difficulty)) {
-                this.difficultyPools.set(difficulty, new Queue<MatchRequest>());
-            }
-            this.difficultyPools.get(difficulty)!.enqueue(matchRequest);
-        }
-
-      // Add to language Pools
-        for (const language of matchRequest.languages) {
-            if (!this.languagePools.has(language)) {
-                this.languagePools.set(language, new Queue<MatchRequest>());
-            }
-            this.languagePools.get(language)!.enqueue(matchRequest);
-        }
     }
 
     removeMatchRequest(matchRequest: MatchRequest): void {
@@ -74,27 +57,6 @@ export class MatchingPools {
         console.log('---------------------------------------------------------------------');
         console.log();
 
-      // Remove from difficulty Pools
-        for (const difficulty of matchRequest.difficulties) {
-            const pool = this.difficultyPools.get(difficulty);
-            if (pool) {
-                pool.remove(matchRequest);
-                if (pool.isEmpty()) {
-                    this.difficultyPools.delete(difficulty);
-                }
-            }
-        }
-
-        // Remove from language Pools
-        for (const language of matchRequest.languages) {
-            const pool = this.languagePools.get(language);
-            if (pool) {
-                pool.remove(matchRequest);
-                if (pool.isEmpty()) {
-                    this.languagePools.delete(language);
-                }
-            }
-        }
     }
 
     findMatchRequestInTopicPools(userId: string, topics: string[]): MatchRequest | null {
@@ -130,11 +92,5 @@ export class MatchingPools {
         this.logTopicPools();
         console.log('---------------------------------------------------------------------');
         console.log();
-    
-        // Remove from difficulty Pools
-        removeFromPool(this.difficultyPools);
-    
-        // Remove from language Pools
-        removeFromPool(this.languagePools);
     }
 }

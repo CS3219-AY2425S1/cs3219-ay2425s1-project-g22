@@ -20,11 +20,11 @@ spec:
           - containerPort: 8080
         envFrom:
         - configMapRef:
-            name: question-service-config-bkoh
+            name: question-service-configmap
         resources:
           requests:
             cpu: "200m"
-            memory: "256Mi"
-          limits:
-            cpu: "500m"
             memory: "512Mi"
+          limits:
+            cpu: "700m"
+            memory: "1Gi"
