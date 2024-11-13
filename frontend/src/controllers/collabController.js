@@ -98,10 +98,11 @@ export const handleDisconnect = async (userId, questionId, roomId, code, languag
   }
 }
 
-export async function translateCode(setters, codeRef, sourceLang, targetLang) {
-  const translatedCode = await translateCodeService(codeRef.current, sourceLang, targetLang);
+export async function translateCode(setters, codeRef, langRef, targetLang) {
+  const translatedCode = await translateCodeService(codeRef.current, langRef.current, targetLang);
   const formattedTranslation = extractCode(translatedCode);
   codeRef.current = formattedTranslation;
+  langRef.current = targetLang
   setters.setSelectedLanguage(targetLang);
   setters.setEditorLanguage(targetLang);
 }

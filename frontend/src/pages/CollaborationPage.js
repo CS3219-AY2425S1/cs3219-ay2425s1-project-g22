@@ -20,6 +20,7 @@ function CollaborationPage() {
   const countdownRef = useRef(null); // Timeout reference for the countdown when user gets kicked out
   const messagesEndRef = useRef(null); // Reference to the end of the chat messages
   const codeRef = useRef(""); // Reference to the code
+  const languageRef = useRef("javascript"); // Ref for language
 
   // Testing Data
   const example_question = {
@@ -32,7 +33,6 @@ function CollaborationPage() {
 
   const [questionObject, setQuestionObject] = useState(example_question);
   const [questionId, setQuestionId] = useState("");
-  const [language, setLanguage] = useState("javascript");
   const [isReadOnly, setIsReadOnly] = useState(false);
   const [isGettingKickedOut, setIsGettingKickedOut] = useState(false);
   const [countdown, setCountdown] = useState(10);
@@ -41,18 +41,18 @@ function CollaborationPage() {
   const [newMessage, setNewMessage] = useState("");
   const [currentUsername, setCurrentUsername] = useState("");
   const [response, setResponse] = useState("");
-  const [selectedLanguage, setSelectedLanguage] = useState(language);
+  const [selectedLanguage, setSelectedLanguage] = useState(languageRef.current);
   const [editorLanguage, setEditorLanguage] = useState("javascript");
 
   // ** introduce theme variables **
   const [editorTheme, setEditorTheme] = useState(() => {
     // saved local theme or default to 'dark'
-    return localStorage.getItem('editorTheme') || 'dark';
+    return localStorage.getItem("editorTheme") || "dark";
   });
 
   // local storage
   useEffect(() => {
-    localStorage.setItem('editorTheme', editorTheme);
+    localStorage.setItem("editorTheme", editorTheme);
   }, [editorTheme]);
 
   useEffect(() => {
@@ -61,22 +61,23 @@ function CollaborationPage() {
       setCurrentUsername,
       setQuestionObject,
       setQuestionId,
-      setLanguage,
       setEditorLanguage,
       setIsReadOnly,
       setIsGettingKickedOut,
       setCountdown,
-      setResponse
-    }
+      setResponse,
+    };
 
     collabService.onCodeChange((newCode) => {
-      handleCodeChange(setters, newCode, editorRef, timeoutRef, isRemoteChange)
+      handleCodeChange(setters, newCode, editorRef, timeoutRef, isRemoteChange);
     });
 
     collabService.onChatMessage((data) => handleChatMessage(data));
-    
-    collabService.onOtherUserDisconnect(() => handleOtherUserDisconnect(setters, countdownRef, navigate));
-    
+
+    collabService.onOtherUserDisconnect(() =>
+      handleOtherUserDisconnect(setters, countdownRef, navigate)
+    );
+
     initializeRoom(setters, roomId, codeRef, navigate);
 
     return () => {
@@ -93,20 +94,23 @@ function CollaborationPage() {
 
   // On navigating away
   useEffect(() => {
-    window.addEventListener("beforeunload", () => handleDisconnect(userId, questionId, roomId, codeRef.current, language)); // For page refresh
+    window.addEventListener("beforeunload", () =>
+      handleDisconnect(userId, questionId, roomId, codeRef.current, languageRef.current)
+    ); // For page refresh
 
     return async () => {
-      window.removeEventListener("beforeunload", () => handleDisconnect(userId, questionId, roomId, codeRef.current, language));
-      handleDisconnect(userId, questionId, roomId, codeRef.current, language); // For component unmount (navigating away)
+      window.removeEventListener("beforeunload", () =>
+        handleDisconnect(userId, questionId, roomId, codeRef.current, languageRef.current)
+      );
+      handleDisconnect(userId, questionId, roomId, codeRef.current, languageRef.current); // For component unmount (navigating away)
     };
-  }, [questionId, userId, language, roomId]);
-
+  }, [questionId, userId, roomId]);
 
   useEffect(() => {
     collabService.onLanguageChange((newLanguage) => {
-      setLanguage(newLanguage);
-      setEditorLanguage(newLanguage); 
-      setSelectedLanguage(newLanguage); 
+      languageRef.current = newLanguage;
+      setSelectedLanguage(newLanguage);
+      setEditorLanguage(newLanguage);
     });
   }, []);
 
@@ -132,7 +136,7 @@ function CollaborationPage() {
     fontFamily: "JetBrains Mono, monospace",
     minimap: { enabled: true },
     scrollBeyondLastLine: false,
-    theme: editorTheme === 'dark' ? "vs-dark" : "light", // Dynamically set theme
+    theme: editorTheme === "dark" ? "vs-dark" : "light", // Dynamically set theme
     lineHeight: 18,
     padding: { top: 16 },
   };
@@ -149,18 +153,22 @@ function CollaborationPage() {
 
   const handleLanguageChange = async (event) => {
     const newLanguage = event.target.value;
-    translateCode({ setSelectedLanguage, setEditorLanguage }, codeRef, language, newLanguage);
+    translateCode(
+      { setSelectedLanguage, setEditorLanguage },
+      codeRef,
+      languageRef,
+      newLanguage
+    );
     collabService.sendLanguageChange(newLanguage);
   };
 
   // ** toggle handler **
   const toggleEditorTheme = () => {
-    setEditorTheme(prevTheme => prevTheme === 'dark' ? 'light' : 'dark');
+    setEditorTheme((prevTheme) => (prevTheme === "dark" ? "light" : "dark"));
   };
 
   return (
     <div className="h-[calc(100vh-65px)] w-full flex flex-col">
-      
       {/* ** DaisyUI toggle within the editor ** */}
       <div className="flex flex-row flex-grow h-2/3">
         <div className="w-1/2 bg-[#1e1e1e] flex text-white overflow-y-auto px-3 border-r-2 border-black">
@@ -183,26 +191,29 @@ function CollaborationPage() {
           <div className="flex flex-col w-full">
             {/* ** theme toggle code ** */}
             <div className="flex justify-end p-2">
-              <label className="swap swap-rotate" aria-label="Toggle Editor Theme">
-                <input 
-                  type="checkbox" 
-                  checked={editorTheme === 'dark'} 
-                  onChange={toggleEditorTheme} 
+              <label
+                className="swap swap-rotate"
+                aria-label="Toggle Editor Theme"
+              >
+                <input
+                  type="checkbox"
+                  checked={editorTheme === "dark"}
+                  onChange={toggleEditorTheme}
                 />
-                
+
                 {/* Sun Icon (Visible when in Dark Mode) */}
-                <svg 
-                  className="swap-on fill-current w-6 h-6 text-yellow-500" 
-                  xmlns="http://www.w3.org/2000/svg" 
+                <svg
+                  className="swap-on fill-current w-6 h-6 text-yellow-500"
+                  xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
                 >
                   <path d="M12 4.5a1 1 0 011 1V7a1 1 0 11-2 0V5.5a1 1 0 011-1zm0 13a1 1 0 011 1V19a1 1 0 11-2 0v-1.5a1 1 0 011-1zm8-8a1 1 0 011 1H19a1 1 0 110-2h2a1 1 0 011 1zm-15 0a1 1 0 011 1H5a1 1 0 110-2H4a1 1 0 011 1zm12.364-5.364a1 1 0 011.414 0l1.061 1.061a1 1 0 11-1.414 1.414L16.364 6.05a1 1 0 010-1.414zm-12.728 12.728a1 1 0 011.414 0l1.061 1.061a1 1 0 11-1.414 1.414L3.636 18.364a1 1 0 010-1.414zm12.728 0a1 1 0 010 1.414l-1.061 1.061a1 1 0 11-1.414-1.414l1.061-1.061a1 1 0 011.414 0zm-12.728-12.728a1 1 0 010 1.414L4.05 6.05a1 1 0 11-1.414-1.414l1.061-1.061a1 1 0 011.414 0zM12 8a4 4 0 100 8 4 4 0 000-8z" />
                 </svg>
-      
+
                 {/* Moon Icon (Visible when in Light Mode) */}
-                <svg 
-                  className="swap-off fill-current w-6 h-6 text-white-800" 
-                  xmlns="http://www.w3.org/2000/svg" 
+                <svg
+                  className="swap-off fill-current w-6 h-6 text-white-800"
+                  xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
                 >
                   <path d="M21.752 15.002A9 9 0 1111.002 2a7 7 0 109.75 13.002z" />
@@ -228,8 +239,8 @@ function CollaborationPage() {
               className="h-full text-sm"
               language={editorLanguage}
               value={codeRef.current}
-              onChange={(newCode) => codeRef.current = newCode}
-              theme={editorTheme === 'dark' ? "vs-dark" : "light"} // Dynamically set theme
+              onChange={(newCode) => (codeRef.current = newCode)}
+              theme={editorTheme === "dark" ? "vs-dark" : "light"} // Dynamically set theme
               options={editorOptions}
               onMount={handleEditorDidMount}
             />
