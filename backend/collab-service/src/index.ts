@@ -97,6 +97,10 @@ io.on('connection', (socket) => {
     // Send the chat message to Kafka
     await sendChatMessage('collab-chat', { key: username, value: message });
   });
+
+  socket.on('language-change', (newLanguage) => {
+    socket.broadcast.emit('language-change', newLanguage);
+  });
 });
 
 async function handleDisconnect(id: string) {

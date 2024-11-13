@@ -9,9 +9,9 @@ let chatListenerAdded = false; // Flag to prevent duplicate listeners
 const collabService = {
   register: (username) => {
     return new Promise((resolve, reject) => {
-      socket.emit('register', username, (response) => {
+      socket.emit("register", username, (response) => {
         if (!response.success) {
-          console.error('Error registering user:', response.error);
+          console.error("Error registering user:", response.error);
           reject(new Error(response.error));
         } else {
           resolve(response);
@@ -21,14 +21,14 @@ const collabService = {
   },
 
   disconnect: (username) => {
-    socket.emit('disconnect-collab');
+    socket.emit("disconnect-collab");
   },
 
   getRoomDetails: (roomId) => {
     return new Promise((resolve, reject) => {
-      socket.emit('get-room-details', roomId, (response) => {
+      socket.emit("get-room-details", roomId, (response) => {
         if (!response.success) {
-          console.error('Error getting room details:', response.error);
+          console.error("Error getting room details:", response.error);
           reject(new Error(response.error));
         } else {
           resolve(response);
@@ -39,9 +39,9 @@ const collabService = {
 
   getRoomId: (username) => {
     return new Promise((resolve, reject) => {
-      socket.emit('get-roomId-from-username', username, (response) => {
+      socket.emit("get-roomId-from-username", username, (response) => {
         if (!response.success) {
-          console.error('Error getting room ID:', response.error);
+          console.error("Error getting room ID:", response.error);
           reject(new Error(response.error));
         } else {
           resolve(response.roomId);
@@ -50,25 +50,35 @@ const collabService = {
     });
   },
 
+  sendLanguageChange: (newLanguage) => {
+    socket.emit("language-change", newLanguage);
+  },
+
+  onLanguageChange: (callback) => {
+    socket.on("language-change", (newLanguage) => {
+      callback(newLanguage);
+    });
+  },
+
   sendCode: (code) => {
-    socket.emit('code-change', code);
+    socket.emit("code-change", code);
   },
 
   onCodeChange: (callback) => {
-    socket.on('code-change', (code) => {
+    socket.on("code-change", (code) => {
       callback(code);
     });
   },
 
   onOtherUserDisconnect: (callback) => {
-    socket.on('other-user-disconnect', () => {
+    socket.on("other-user-disconnect", () => {
       callback();
     });
   },
 
   onChatMessage: (callback) => {
     if (!chatListenerAdded) {
-      socket.on('chat-message', (data) => {
+      socket.on("chat-message", (data) => {
         chatMessageCallbacks.forEach((cb) => cb(data));
       });
       chatListenerAdded = true;
@@ -81,7 +91,7 @@ const collabService = {
   },
 
   sendChatMessage: (message) => {
-    socket.emit('chat-message', message);
+    socket.emit("chat-message", message);
   },
 };
 

@@ -2,6 +2,7 @@
 import collabService from '../services/collabService';
 import { translateCodeService } from '../services/aiService';
 import { addAttemptedQuestion, getToken, verifyToken } from '../services/userService';
+import { extractCode } from '../commons/utils';
 
 export const initializeRoom = async (setters, roomId, codeRef, navigate) => {
   const token = getToken();
@@ -99,7 +100,8 @@ export const handleDisconnect = async (userId, questionId, roomId, code, languag
 
 export async function translateCode(setters, codeRef, sourceLang, targetLang) {
   const translatedCode = await translateCodeService(codeRef.current, sourceLang, targetLang);
-  codeRef.current = translatedCode;
+  const formattedTranslation = extractCode(translatedCode);
+  codeRef.current = formattedTranslation;
   setters.setSelectedLanguage(targetLang);
   setters.setEditorLanguage(targetLang);
 }
