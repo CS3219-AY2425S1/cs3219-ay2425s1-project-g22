@@ -4,7 +4,7 @@ import { translateCodeService } from '../services/aiService';
 import { addAttemptedQuestion, getToken, verifyToken } from '../services/userService';
 import { extractCode } from '../commons/utils';
 
-export const initializeRoom = async (setters, roomId, codeRef, navigate) => {
+export const initializeRoom = async (setters, roomId, codeRef, langRef, navigate) => {
   const token = getToken();
 
   try {
@@ -30,9 +30,10 @@ export const initializeRoom = async (setters, roomId, codeRef, navigate) => {
     await collabService.register(username);
     setters.setQuestionObject(room.question);
     setters.setQuestionId(room.question.questionId);
-    setters.setLanguage(room.language);
-    setters.setEditorLanguage(room.language);
+    // setters.setLanguage(room.language);
+    // setters.setEditorLanguage(room.language);
 
+    langRef.current = room.language;
     codeRef.current = room.code;
   } catch (error) {
     console.error("Error initializing room:", error);
@@ -98,13 +99,15 @@ export const handleDisconnect = async (userId, questionId, roomId, code, languag
   }
 }
 
-export async function handleLanguageChange(setters, codeRef, langRef, targetLang) {
+export async function handleLanguageChange(codeRef, langRef, targetLang) {
+  console.log(langRef.current)
   const translatedCode = await translateCodeService(codeRef.current, langRef.current, targetLang);
+  console.log(translatedCode)
   const formattedTranslation = extractCode(translatedCode);
   codeRef.current = formattedTranslation;
   langRef.current = targetLang
-  setters.setSelectedLanguage(targetLang);
-  setters.setEditorLanguage(targetLang);
+  // setters.setSelectedLanguage(targetLang);
+  // setters.setEditorLanguage(targetLang);
 }
 
 async function fetchRoomIdWithRetry(username, maxRetries = 5, delayMs = 1000) {

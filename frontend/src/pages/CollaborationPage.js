@@ -41,8 +41,8 @@ function CollaborationPage() {
   const [newMessage, setNewMessage] = useState("");
   const [currentUsername, setCurrentUsername] = useState("");
   const [response, setResponse] = useState("");
-  const [selectedLanguage, setSelectedLanguage] = useState("javascript");
-  const [editorLanguage, setEditorLanguage] = useState("javascript");
+  // const [selectedLanguage, setSelectedLanguage] = useState("javascript");
+  // const [editorLanguage, setEditorLanguage] = useState("javascript");
 
   // ** introduce theme variables **
   const [editorTheme, setEditorTheme] = useState(() => {
@@ -61,7 +61,7 @@ function CollaborationPage() {
       setCurrentUsername,
       setQuestionObject,
       setQuestionId,
-      setEditorLanguage,
+      // setEditorLanguage,
       setIsReadOnly,
       setIsGettingKickedOut,
       setCountdown,
@@ -77,10 +77,10 @@ function CollaborationPage() {
     collabService.onOtherUserDisconnect(() => handleOtherUserDisconnect(setters, countdownRef, navigate));
 
     collabService.onLanguageChange((newLanguage) => {
-      handleLanguageChange(setters, codeRef, langRef, newLanguage)
+      handleLanguageChange(codeRef, langRef, newLanguage)
     })
     
-    initializeRoom(setters, roomId, codeRef, navigate);
+    initializeRoom(setters, roomId, codeRef, langRef, navigate);
 
     return () => {
       collabService.offChatMessage(handleChatMessage);
@@ -96,10 +96,10 @@ function CollaborationPage() {
 
   // On navigating away
   useEffect(() => {
-    window.addEventListener("beforeunload", () => handleDisconnect(userId, questionId, roomId, codeRef.current)); // For page refresh
+    window.addEventListener("beforeunload", () => handleDisconnect(userId, questionId, roomId, codeRef.current, langRef.current)); // For page refresh
 
     return async () => {
-      window.removeEventListener("beforeunload", () => handleDisconnect(userId, questionId, roomId, codeRef.current));
+      window.removeEventListener("beforeunload", () => handleDisconnect(userId, questionId, roomId, codeRef.current, langRef.current));
       handleDisconnect(userId, questionId, roomId, codeRef.current, langRef.current); // For component unmount (navigating away)
     };
   }, [questionId, userId, roomId]);
@@ -158,7 +158,7 @@ function CollaborationPage() {
       <div className="flex flex-row flex-grow h-2/3">
         <div className="w-1/2 bg-[#1e1e1e] flex text-white overflow-y-auto px-3 border-r-2 border-black">
           <QuestionDisplay
-            language={selectedLanguage}
+            language={langRef.current}
             question={questionObject}
           />
         </div>
@@ -208,8 +208,8 @@ function CollaborationPage() {
 
             <div className="pb-2">
               <select
-                value={selectedLanguage}
-                onChange={handleLanguageChange}
+                value={langRef.current}
+                onChange={(e) => handleLanguageChange(codeRef, langRef, e.target.value)}
                 className="text-gray-800 font-medium text-xs bg-gray-200 border rounded-md p-2 mt-8 mx-4"
               >
                 {languageList.map((lang) => (
@@ -226,7 +226,7 @@ function CollaborationPage() {
 
             <Editor
               className="h-full text-sm"
-              language={editorLanguage}
+              language={langRef.current}
               value={codeRef.current}
               onChange={(newCode) => (codeRef.current = newCode)}
               theme={editorTheme === "dark" ? "vs-dark" : "light"} // Dynamically set theme
